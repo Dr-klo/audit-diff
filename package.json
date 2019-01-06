@@ -2,7 +2,8 @@
   "name": "audit-diff",
   "version": "1.0.0",
   "description": "Audit differences using map object",
-  "main": "dist/index.js",
+  "main": "dist/diff.service.js",
+  "types": "dist/diff.service.d.ts",
   "scripts": {
     "test": "mocha -r ts-node/register src/**/*.spec.ts"
   },
