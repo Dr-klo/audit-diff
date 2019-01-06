@@ -1,6 +1,6 @@
 {
   "name": "audit-diff",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Audit differences using map object.",
   "main": "dist/diff.service.js",
   "types": "dist/diff.service.d.ts",
@@ -12,10 +12,6 @@
     "type": "git",
     "url": "https://github.com/Dr-klo/audit-diff.git"
   },
-  "files": [
-    "dist/*.js",
-    "dist/*.d.ts"
-  ],
   "keywords": [
     "audit",
     "diff",
