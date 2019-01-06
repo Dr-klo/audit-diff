@@ -1,18 +1,27 @@
 {
   "name": "audit-diff",
   "version": "1.0.0",
-  "description": "Audit differences using map object",
+  "description": "Audit differences using map object.",
   "main": "dist/diff.service.js",
   "types": "dist/diff.service.d.ts",
   "scripts": {
+    "build": "tsc",
     "test": "mocha -r ts-node/register src/**/*.spec.ts"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Dr-klo/audit-diff.git"
+  },
+  "files": [
+    "dist/*.js",
+    "dist/*.d.ts"
+  ],
   "keywords": [
     "audit",
     "diff",
     "map"
   ],
-  "author": "Dr.klo",
+  "author": "Dr.klo <kulinchik.leonid@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "@types/mocha": "^5.2.5",
