@@ -12,6 +12,7 @@ interface IUser {
     Address?: string;
     City?: string;
     Phone?: string;
+    HiddenComment?: string;
 }
 // mapping constant
 const UserMap: FieldMap<IUser>  = {
@@ -19,11 +20,12 @@ const UserMap: FieldMap<IUser>  = {
     Address: 'Address Line',
     City: 'City',
     Phone: 'Mobile Phone',
+    // no map to HiddenComment
 };
 
 (async () => {
-    const oldProfile: IUser = {Name: 'John', Address: 'Washington st.', City: 'Chicago', Phone: '111-111-1111'};
-    const newProfile: IUser = {Name: 'John', Address: 'Washington st.', City: 'Brooklyn', Phone: '222-222-2222'};
+    const oldProfile: IUser = {Name: 'John', Address: 'Washington st.', City: 'Chicago', Phone: '111-111-1111', HiddenComment: 'Comment 1'};
+    const newProfile: IUser = {Name: 'John', Address: 'Washington st.', City: 'Brooklyn', Phone: '222-222-2222', HiddenComment: 'Comment 2'};
     const diff: IDiffDetails[] = new DiffService(UserMap).diff(oldProfile, newProfile);
     // prints [ 
     //    DiffDetails {field: 'City', old_value: 'Chicago', new_value: 'Brooklyn'},
@@ -39,11 +41,12 @@ const UserMap: FieldMap<IUser>  = {
 var audit = require('audit-diff')
 
 class User {
-    constructor(name, address, city, phone) {
+    constructor(name, address, city, phone, comment) {
         this.Name = name;
         this.Address = address;
         this.City = city;
         this.Phone = phone;
+        this.HiddenComment = comment;
     }
 }
 // mapping constant
@@ -52,11 +55,12 @@ const UserMap = {
     Address: 'Address Line',
     City: 'City',
     Phone: 'Mobile Phone',
+    // no map to HiddenComment
 };
 
 (async () => {
-    const oldProfile = new User('John', 'Washington st.', 'Chicago', '111-111-1111');
-    const newProfile = new User('John', 'Washington st.', 'Brooklyn', '222-222-2222');
+    const oldProfile = new User('John', 'Washington st.', 'Chicago', '111-111-1111', 'Comment 1');
+    const newProfile = new User('John', 'Washington st.', 'Brooklyn', '222-222-2222', 'Comment 2');
     const diff = new audit.DiffService(UserMap).diff(oldProfile, newProfile);
     // prints [ 
     //    DiffDetails {field: 'City', old_value: 'Chicago', new_value: 'Brooklyn'},
