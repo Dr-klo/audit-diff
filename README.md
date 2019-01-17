@@ -168,7 +168,7 @@ Comarison result of foo1 and foo2 will be
         old_value: 'bar 1 title',
         new_value: 'bar 2 title'
     }] `
-
+#### Hierarchy / Child objects 
 For display hierarchy You should append to descriptor name of instance as second parameter: 
 `bar: new Descriptor(barMap, "Bar")`. It returns 
 
