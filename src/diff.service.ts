@@ -113,8 +113,8 @@ export class DiffService<T> {
                         currentPath: string): IDiffDetails[] {
         // console.log('handle array', key, currentPath);
         const changes = [];
-        const created = newval.slice();
-        const deleted = oldval.slice();
+        const created = newval ? newval.slice() : [];
+        const deleted = oldval ? oldval.slice() : [];
 
         const updated = created
                 .map((c) => {

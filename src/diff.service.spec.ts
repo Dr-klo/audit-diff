@@ -123,4 +123,14 @@ describe('Diff check', () => {
         expect(diff[0].old_value).to.contains(a.stack[0].name);
         expect(diff[0].new_value).to.equal(service.emptyLabel);
     });
+
+    it('Should not fail on empty embedded array', () => {
+        const a = new Foo();
+        const b = new Foo();
+        const service = new DiffService<IFoo>(fooMap);
+        const diff = service.diff(a, b);
+        // console.log(diff);
+        expect(diff.length).to.equal(0);
+
+    })
 });
