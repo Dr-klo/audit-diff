@@ -169,9 +169,9 @@ Comarison result of foo1 and foo2 will be
         new_value: 'bar 2 title'
         path: 'title'
     }] `
-#### Hierarchy / Child objects 
+#### Hierarchy / Child objects / arrays
 For display hierarchy You should append to descriptor name of instance as second parameter: 
-`bar: new Descriptor(barMap, "Bar")`. It returns 
+`bar: new Descriptor(barMap, "Bar")` or `bar: new Descriptor(barMap, "Bar", DescriptorTypesEnum.Object)`. It returns 
 
 ` [{
         field: 'Bar -> Title',
@@ -179,7 +179,7 @@ For display hierarchy You should append to descriptor name of instance as second
         new_value: 'bar 2 title'
         path: 'bar.title'
     }] `
-
+For mapping embedded array descriptor, pass `DescriptorTypesEnum.Array` type.
 ### Todo
 - [x] Mapping differences to UI labels.
 - [x] Checking embedded objects and array.
