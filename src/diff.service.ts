@@ -18,13 +18,14 @@ export class DiffService<T> {
     }
 
     public diff(oldval: T, newval: T): IDiffDetails[] {
-        return this.collectChanges(this.descriptor, newval, oldval, null);
+        return this.collectChanges(this.descriptor, newval, oldval, null, null);
     }
 
     private collectChanges(
         descriptor: Descriptor<T>,
         newval: T,
         oldval: T,
+        virtualPath: string,
         currentPath: string): IDiffDetails[] {
         const changes = [];
         // console.log('collect changes', currentPath, descriptor);
@@ -35,7 +36,7 @@ export class DiffService<T> {
             if (descriptor.keyFn) {
                 deleteMsg += ': ' + descriptor.keyFn(oldval);
             }
-            changes.push(new DiffDetails(currentPath,currentPath, deleteMsg,
+            changes.push(new DiffDetails(currentPath,virtualPath, deleteMsg,
                 this.emptyLabel));
             return changes;
         }
@@ -44,7 +45,7 @@ export class DiffService<T> {
             if (descriptor.keyFn) {
                 createMsg += ': ' + descriptor.keyFn(newval);
             }
-            changes.push(new DiffDetails(currentPath, currentPath, this.emptyLabel,
+            changes.push(new DiffDetails(currentPath, virtualPath, this.emptyLabel,
                 createMsg));
             return changes;
         }
@@ -62,7 +63,7 @@ export class DiffService<T> {
             if (descriptor.keyFn) {
                 createMsg += ': ' + descriptor.keyFn(newval);
             }
-            changes.push(new DiffDetails(currentPath, currentPath, delMsg, createMsg))
+            changes.push(new DiffDetails(currentPath, virtualPath, delMsg, createMsg))
             return changes;
         }
         for (const _key of keys) {
@@ -81,7 +82,7 @@ export class DiffService<T> {
             if (keyType === DescriptorTypesEnum.Field) {
                 const path: string = currentPath ?
                     currentPath + this.delimeter + fieldDescription.toString() : fieldDescription.toString();
-                const field = this.handleProperty(newvalElement, oldvalElement, path);
+                const field = this.handleProperty(newvalElement, oldvalElement, this.bindPath(virtualPath, key), path);
                 if (field) {
                     changes.push(field);
                 }
@@ -94,9 +95,9 @@ export class DiffService<T> {
                 const fields = keyType === DescriptorTypesEnum.Object ?
                     this.collectChanges(
                         descriptorElement,
-                        newvalElement, oldvalElement, path) :
+                        newvalElement, oldvalElement, this.bindPath(virtualPath, key), path) :
                     this.handleArray(descriptorElement,
-                        newvalElement, oldvalElement, key, path);
+                        newvalElement, oldvalElement, key, virtualPath, path);
                 // console.log('f', fields);
                 if (fields) {
                     changes.push(...fields);
@@ -105,11 +106,14 @@ export class DiffService<T> {
         }
         return changes;
     }
-
+    public bindPath(path = null, nextKey = null, index = null){
+        return (path!==null? (path + (nextKey!==null?'.':'')) : '') + (nextKey||'') + (index!==null? `[${index}]`: '');
+    }
     private handleArray(descriptor: Descriptor<T>,
                         newval: T[],
                         oldval: T[],
                         key: string,
+                        virtualPath: string,
                         currentPath: string): IDiffDetails[] {
         // console.log('handle array', key, currentPath);
         const changes = [];
@@ -121,23 +125,22 @@ export class DiffService<T> {
                     const del = deleted.find((d) => descriptor.Compare(d, c));
                     return {c, d: del};
                 }).filter((x) => x.c && x.d);
-            for (const pair of updated) {
-                const diff = this.collectChanges(descriptor, pair.c, pair.d, currentPath);
+             updated.forEach((pair, index)=>{
+                const diff = this.collectChanges(descriptor, pair.c, pair.d, this.bindPath(virtualPath, key, index), currentPath);
                 if (diff) {
                     changes.push(...diff);
                 }
                 created.splice(created.indexOf(pair.c), 1);
                 deleted.splice(deleted.indexOf(pair.d), 1);
-            }
-
+            });
         for (const item of created) {
-            const diff = this.collectChanges(descriptor, item, null, currentPath);
+            const diff = this.collectChanges(descriptor, item, null, this.bindPath(virtualPath, key), currentPath);
             if (diff) {
                 changes.push(...diff);
             }
         }
         for (const item of deleted) {
-            const diff = this.collectChanges(descriptor, null, item, currentPath);
+            const diff = this.collectChanges(descriptor, null, item, this.bindPath(virtualPath, key), currentPath);
             if (diff) {
                 changes.push(...diff);
             }
@@ -167,7 +170,7 @@ export class DiffService<T> {
                 // console.log("typegoose reference find");
                 return null;
             }
-            return this.collectChanges(descriptor, newval, oldval, currentPath);
+            return this.collectChanges(descriptor, newval, oldval, null, currentPath);
 
         }
     }
@@ -179,7 +182,7 @@ export class DiffService<T> {
         return /^[A-Fa-f0-9]{24}$/.test(field.toString());
     }
 
-    private handleProperty(newval: any, oldval: any, field): any {
+    private handleProperty(newval: any, oldval: any, path, virtualPath): any {
         // console.log("handle prop", newval, oldval, field);
         if (newval == null) {
             newval =  this.emptyLabel;
@@ -190,17 +193,17 @@ export class DiffService<T> {
         try {
             if (newval instanceof Date || oldval instanceof Date) {
                 if (new Date(newval).toISOString() !== new Date(oldval).toISOString()) {
-                    return new DiffDetails(field,field,
+                    return new DiffDetails(virtualPath,path,
                         new Date(oldval).toLocaleString(),
                         new Date(newval).toLocaleString());
                 }
             } else if (newval instanceof Boolean || oldval instanceof Boolean && oldval !== newval) {
                 return new DiffDetails(
-                    field,  field, oldval ? 'Checked' : 'Unchecked', newval ? 'Checked' : 'Unchecked');
+                    virtualPath,  path, oldval ? 'Checked' : 'Unchecked', newval ? 'Checked' : 'Unchecked');
             } else {
                 if (newval.toString() !== oldval.toString()) {
                     return new DiffDetails(
-                        field, field, oldval.toString(), newval.toString());
+                        virtualPath, path, oldval.toString(), newval.toString());
                 }
             }
         } catch (e) {

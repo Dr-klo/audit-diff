@@ -13,8 +13,8 @@ export class DiffDetails implements IDiffDetails {
     public new_value: string;
     public path: string;
 
-    constructor(key: string, path: string, oldval: string, newval: string) {
-        this.field = key;
+    constructor(name: string, path: string, oldval: string, newval: string) {
+        this.field = name;
         this.old_value = oldval;
         this.new_value = newval;
         this.path = path;

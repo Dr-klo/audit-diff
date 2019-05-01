@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 import 'mocha';
 import {DiffService} from './diff.service';
-import {Descriptor, DescriptorTypesEnum, FieldMap} from './idescriptor';
+import {Descriptor, DescriptorTypesEnum, FieldMap, IDescriptor} from './idescriptor';
 
 class Simple {
     public field: string;
@@ -52,6 +52,10 @@ class Foo implements IFoo {
     public edited: Date;
     public title: string;
     public stack: StackClass[];
+
+    constructor() {
+        this.stack = [];
+    }
 }
 
 class StackClass {
@@ -61,16 +65,22 @@ class StackClass {
 
 describe('Diff check', () => {
 
-    it('Should not file on null pass', () => {
+    it('Should not fail on null pass', () => {
         const a = new Simple();
         const b = new Simple();
         a.field = 'a';
         b.field = 'b';
 
         const diff = new DiffService(simpleMap);
-        console.log(diff.diff(null, b));
-        console.log(diff.diff( a, null));
-        console.log(diff.diff( null, null));
+        expect(() => {
+            diff.diff(null, b)
+        }).to.not.throw();
+        expect(() => {
+            diff.diff(a, null)
+        }).to.not.throw();
+        expect(() => {
+            diff.diff(null, null)
+        }).to.not.throw();
     });
     it('Diff only one field', () => {
         const a = new Simple();
@@ -133,4 +143,44 @@ describe('Diff check', () => {
         expect(diff.length).to.equal(0);
 
     })
+
+    it('Should get path', () => {
+        const a = new Foo();
+        const b = new Foo();
+        a.bar = new Bar();
+        b.bar = new Bar();
+        a.bar.user = "A Bar User";
+        b.bar.user = "B Bar User";
+        const service = new DiffService<IFoo>(fooMap);
+        const diff = service.diff(a, b);
+        expect(diff.length).to.equal(1);
+        expect(diff[0].path).to.equal('bar.user');
+
+    })
+    it('Should get path of array', () => {
+        const a = new Foo();
+        const b = new Foo();
+        a.stack.push({name: "A Stack Name", id: 0});
+        b.stack.push({name: "B Stack Name", id: 0});
+        a.stack.push({name: "C Stack Name", id: 1});
+        b.stack.push({name: "D Stack Name", id: 2});
+        const service = new DiffService<IFoo>(fooMap);
+        const diff = service.diff(a, b);
+        expect(diff.length).to.equal(3);
+        expect(diff[0].path).to.equal('stack[0].name');
+        expect(diff[0].field).to.equal((<IDescriptor>fooMap.stack).descriptorName + service.delimeter + stackMap.name);
+        expect(diff[1].path).to.equal('stack');
+        expect(diff[2].path).to.equal('stack');
+
+    })
+    it('Should Correct Bind Path', () => {
+        const service = new DiffService<IFoo>(fooMap);
+        expect(service.bindPath('root')).to.equal('root');
+        expect(service.bindPath(null, 'child')).to.equal('child');
+        expect(service.bindPath('root', 'child')).to.equal('root.child');
+        expect(service.bindPath('root', 'child', 0)).to.equal('root.child[0]');
+        expect(service.bindPath('root', 'child', 4)).to.equal('root.child[4]');
+    })
+
+
 });
