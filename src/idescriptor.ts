@@ -27,12 +27,12 @@ export class Descriptor<T> {
         return this.map ? Object.keys(this.map) as Array<keyof T> : [];
     }
 
-    public getDescription(field: string): string | IDescriptor {
-        const value = this.map ? this.map[field] : null;
-        if (!value) {
+    public getDescription(field: string): string {
+        const descriptor = this.getFieldType(field);
+        if (!descriptor) {
             return null;
         }
-        return value;
+        return  this.map ? descriptor === DescriptorTypesEnum.Field ? this.map[field] : (<IDescriptor>this.map[field]).descriptorName: null;
     }
 
     public Compare(a: T, b: T): boolean {

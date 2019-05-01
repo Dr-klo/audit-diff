@@ -172,7 +172,7 @@ describe('Diff check', () => {
         expect(diff[1].path).to.equal('stack');
         expect(diff[2].path).to.equal('stack');
 
-    })
+    });
     it('Should Correct Bind Path', () => {
         const service = new DiffService<IFoo>(fooMap);
         expect(service.bindPath('root')).to.equal('root');
@@ -181,6 +181,4 @@ describe('Diff check', () => {
         expect(service.bindPath('root', 'child', 0)).to.equal('root.child[0]');
         expect(service.bindPath('root', 'child', 4)).to.equal('root.child[4]');
     })
-
-
 });
