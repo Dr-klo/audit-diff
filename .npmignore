@@ -1,2 +1,6 @@
-src
+/src
 tsconfig.json
+index.ts
+.idea/
+node_modules/
+examples/
