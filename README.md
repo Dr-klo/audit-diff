@@ -173,12 +173,14 @@ Comarison result of foo1 and foo2 will be
 For display hierarchy You should append to descriptor name of instance as second parameter: 
 `bar: new Descriptor(barMap, "Bar")` or `bar: new Descriptor(barMap, "Bar", DescriptorTypesEnum.Object)`. It returns 
 
-``` [{
+``` 
+[{
         field: 'Bar -> Title',
         old_value: 'bar 1 title',
         new_value: 'bar 2 title'
         path: 'bar.title'
-    }] ```
+}] 
+```
 For mapping embedded array descriptor, pass `DescriptorTypesEnum.Array` type.
 ### Todo
 - [x] Mapping differences to UI labels.
