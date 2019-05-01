@@ -38,8 +38,8 @@ const UserMap: FieldMap<IUser>  = {
                                 HiddenComment: 'Comment 2'};
     const diff: IDiffDetails[] = new DiffService(UserMap).diff(oldProfile, newProfile);
     // prints [ 
-    //    DiffDetails {field: 'City', old_value: 'Chicago', new_value: 'Brooklyn'},
-    //    DiffDetails {field: 'Mobile Phone', old_value: '111-111-1111', new_value: '222-222-2222'} ]
+    //    DiffDetails {field: 'City', old_value: 'Chicago', new_value: 'Brooklyn', path: 'City'},
+    //    DiffDetails {field: 'Mobile Phone', old_value: '111-111-1111', new_value: '222-222-2222', path: 'Phone'} ]
     console.log(diff);
 })();
 
@@ -73,8 +73,8 @@ const UserMap = {
     const newProfile = new User('John', 'Washington st.', 'Brooklyn', '222-222-2222', 'Comment 2');
     const diff = new audit.DiffService(UserMap).diff(oldProfile, newProfile);
     // prints [ 
-    //     {field: 'City', old_value: 'Chicago', new_value: 'Brooklyn'},
-    //     {field: 'Mobile Phone', old_value: '111-111-1111', new_value: '222-222-2222'} ]
+    //     {field: 'City', old_value: 'Chicago', new_value: 'Brooklyn', path: 'City'},
+    //     {field: 'Mobile Phone', old_value: '111-111-1111', new_value: '222-222-2222', path: 'Phone'} ]
     console.log(diff);
 })();
 ```
@@ -167,6 +167,7 @@ Comarison result of foo1 and foo2 will be
         field: 'Title',
         old_value: 'bar 1 title',
         new_value: 'bar 2 title'
+        path: 'title'
     }] `
 #### Hierarchy / Child objects 
 For display hierarchy You should append to descriptor name of instance as second parameter: 
@@ -176,11 +177,13 @@ For display hierarchy You should append to descriptor name of instance as second
         field: 'Bar -> Title',
         old_value: 'bar 1 title',
         new_value: 'bar 2 title'
+        path: 'bar.title'
     }] `
 
 ### Todo
-- [x] Mapping differences to UI labels
-- [x] Checking embedded objects and array
-- [x] Custom function for comparison and displaying fields
+- [x] Mapping differences to UI labels.
+- [x] Checking embedded objects and array.
+- [x] Custom function for comparison and displaying fields.
+- [x] Handle path of changed field.
 - [ ] Interceptor for embedded object for custom comparizon(For example Mongodb ObjectId intercept)
 - [ ] Load map from JSON
