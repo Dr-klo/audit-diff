@@ -180,5 +180,15 @@ describe('Diff check', () => {
         expect(service.bindPath('root', 'child')).to.equal('root.child');
         expect(service.bindPath('root', 'child', 0)).to.equal('root.child[0]');
         expect(service.bindPath('root', 'child', 4)).to.equal('root.child[4]');
+    });
+    it('Should not fail on empty date', () => {
+        const a = {date: new Date(2019,1,1)};
+        const b = {date: null};
+        const service = new DiffService<any>({date: "Date Title"});
+        const diff = service.diff(a, b);
+        expect(diff.length).to.equal(1);
+        expect(diff[0].path).to.equal('date');
+        expect(diff[0].old_value).to.equal(a.date.toLocaleString());
+        expect(diff[0].new_value).to.equal('N/A');
     })
 });

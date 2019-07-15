@@ -190,30 +190,39 @@ export class DiffService<T> {
 
     private handleProperty(newval: any, oldval: any, path, currentPath): any {
         // console.log("handle prop", newval, oldval, field);
+        try {
+            if (newval instanceof Date || oldval instanceof Date) {
+               return this.handleDatesDiff(newval, oldval, currentPath, path);
+            } else if (newval instanceof Boolean || oldval instanceof Boolean && oldval !== newval) {
+                return this.createDiff(
+                    currentPath,  path, oldval ? 'Checked' : 'Unchecked', newval ? 'Checked' : 'Unchecked');
+            } else {
+                if (newval !== oldval) {
+                    return this.createDiff(
+                        currentPath, path, oldval, newval);
+                }
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    private createDiff(currentPath: string, path: string, oldval: any, newval:any) {
         if (newval == null) {
             newval =  this.emptyLabel;
         }
         if (oldval == null) {
             oldval =  this.emptyLabel;
         }
-        try {
-            if (newval instanceof Date || oldval instanceof Date) {
-                if (new Date(newval).toISOString() !== new Date(oldval).toISOString()) {
-                    return new DiffDetails(currentPath,path,
-                        new Date(oldval).toLocaleString(),
-                        new Date(newval).toLocaleString());
-                }
-            } else if (newval instanceof Boolean || oldval instanceof Boolean && oldval !== newval) {
-                return new DiffDetails(
-                    currentPath,  path, oldval ? 'Checked' : 'Unchecked', newval ? 'Checked' : 'Unchecked');
-            } else {
-                if (newval.toString() !== oldval.toString()) {
-                    return new DiffDetails(
-                        currentPath, path, oldval.toString(), newval.toString());
-                }
-            }
-        } catch (e) {
-            console.error(e);
+        return new DiffDetails(
+            currentPath, path, oldval, newval);
+    }
+    private handleDatesDiff(newval: Date | string, oldval: Date | string, currentPath: string, path: string){
+        let _old = oldval ? new Date(oldval).toLocaleString(): oldval;
+        let _new = newval ? new Date(newval).toLocaleString(): newval;
+        if (_old !== _new) {
+            return this.createDiff(currentPath,path,
+                _old,
+                _new);
         }
     }
 }
